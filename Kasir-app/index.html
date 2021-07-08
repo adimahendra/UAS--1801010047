@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Aplikasi Kasir</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+  </head>
+  <body>
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="row">
+                <!-- <div class="col-md-1"></div> -->
+                <div class="col-md-12">
+                    <div class="">
+                        <div class="jumbotron jumbotron-fluid">
+                            <div class="container">
+                                <div class="col-md-12 text-center">
+                                    <h2>APLIKASI KASIR</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12" >
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="">
+                                <div class="jumbotron jumbotron-fluid">
+                                    <div class="">
+                                    <div class="col-md-12">
+                                        <div class="text-center"><h5>INPUT BELANJAAN</h5></div>
+                                        <div class="clear pd-10"></div>
+                                        <form id="form_tambah_barang">
+                                            <div class="form-group row">
+                                              <label for="staticEmail" class="col-sm-4 col-form-label text-inputs">Kode Barang</label>
+                                              <div class="col-sm-6">
+                                                <input type="text" name="kode_barang" class="form-control kode_barang" id="staticEmail" required="yes" >
+                                              </div>
+                                            </div>
+                                            <div class="form-group row">
+                                              <label for="inputPassword" class="col-sm-4 col-form-label text-inputs">Nama Barang</label>
+                                              <div class="col-sm-8">
+                                                <input type="text" name="nama_barang" class="form-control nama_barang" id="inputPassword" required>
+                                              </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="inputPassword" class="col-sm-4 col-form-label text-inputs">Harga</label>
+                                                <div class="col-sm-7">
+                                                  <input type="text" name="harga" class="form-control harga" id="inputPassword" required >
+                                                </div>
+                                              </div>
+                                            <div class="form-group row">
+                                                <label for="inputPassword" class="col-sm-4 col-form-label text-inputs">Jumlah</label>
+                                                <div class="col-sm-5">
+                                                    <input type="number" name="jumlah_barang" class="form-control" minlength="0" id="jumlah_barang" required>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row" style="background-color: rgba(255, 215, 101, 0.2);">
+                                                <label for="inputPassword" class="col-sm-4 col-form-label"><b>Total</b></label>
+                                                <div class="col-sm-8">
+                                                    <input type="hidden" id="total_harga_barang" name="total_harga_barang" >
+                                                    <h4>Rp. <span class="total_harga"></span></h4>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-md-12">
+                                                    <button type="submit" id="button" class="btn btn-info btn-block">Masukan Ke Keranjang</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                     </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="">
+                                <div class="jumbotron jumbotron-fluid">
+                                    <div class="col-md-12">
+                                        <div class="text-center"><h5>KERANJANG BELANJAAN</h5></div>
+                                        <div class="clear pd-10"></div>
+                                        <table class="table table-hover">
+                                            <thead class="thead-dark">
+                                              <tr>
+                                                <th scope="col" >Kode Barang</th>
+                                                <th scope="col" >Nama Barang</th>
+                                                <th scope="col" >Harga</th>
+                                                <th scope="col">Jumlah</th>
+                                                <th scope="col">Total</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody id="daftar_barang_belanjaan">
+                                            </tbody>
+                                        </table>
+                                        <form >
+                                            <div class="form-group row">
+                                                <label for="staticEmail" class="col-sm-3 col-form-label text-inputs">Masukan uang</label>
+                                                <div class="col-sm-6">
+                                                    <input type="text" name="UangBayar" class="form-control kode_barang" id="UangBayar" required="yes" placeholder="Rp." >
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="staticEmail" class="col-sm-3 col-form-label text-inputs">Kembalian</label>
+                                                <div class="col-sm-6">
+                                                    <input type="text" name="UangKembalian" class="form-control kode_barang" id="UangKembalian" readonly placeholder="Rp." >
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-md-4">
+                                                    <button type="button" id="tombol_bayar" class="btn btn-success btn-block">BAYAR</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <div id="listpp"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="col-md-1"></div> -->
+            </div>
+        </div>
+    </div>
+    <script>
+        window.$ = window.jQuery = require("jquery");
+    </script>
+    <!-- <script>require('bootstrap');</script> -->
+    <script>
+        const electron = require("electron");
+        const{ipcRenderer} = electron;
+
+        const form  = document.getElementById("form_tambah_barang");
+        const penampungData = {};
+        var hitungToatlHargaBarang = 0;
+        
+        form.addEventListener("submit", event =>{
+            event.preventDefault();
+            for(let i=0; i < form.elements.length; i++){
+                if(form.elements[i].type !== "submit")
+                    penampungData[form.elements[i].name] = form.elements[i].value;
+            }
+            ipcRenderer.send("appointment:creates", penampungData);
+            // reset form
+            form.reset();
+            $('.total_harga').text('');
+        });
+
+        $('#jumlah_barang').on('keyup', function(){
+            var jumlah_sekarang = $(this).val();
+            var total = jumlah_sekarang * $('.harga').val();
+            $('.total_harga').text(parseInt(total).toLocaleString());
+            $('#total_harga_barang').val(total);
+        });
+        
+        ipcRenderer.send("appointment:request:list");
+        ipcRenderer.on("appointment:response:list", (event, appoinments) => {
+            const listDiv = document.getElementById("daftar_barang_belanjaan");
+            appoinments.forEach(appoinment => {
+                const appointmentDive = document.createElement("tr");
+
+                const KodeBarang = document.createElement("th");
+                KodeBarang.innerHTML = `${appoinment.kode_barang}`;
+
+                const NamaBarang = document.createElement("td");
+                NamaBarang.innerHTML = `${appoinment.nama_barang}`;
+
+                const HargaBarang = document.createElement("td");
+                HargaBarang.innerHTML = `Rp ${parseInt(appoinment.harga).toLocaleString()}`;
+
+                const JumlahBarang = document.createElement("td");
+                JumlahBarang.innerHTML = `${appoinment.jumlah_barang}`;
+
+                const TotalHargaBarang = document.createElement("td");
+                TotalHargaBarang.innerHTML = `Rp.${parseInt(appoinment.total_harga_barang).toLocaleString()}`; 
+                
+                hitungToatlHargaBarang += Number(appoinment.total_harga_barang);
+                appointmentDive.appendChild(KodeBarang);
+                appointmentDive.appendChild(NamaBarang);
+                appointmentDive.appendChild(HargaBarang);
+                appointmentDive.appendChild(JumlahBarang);
+                appointmentDive.appendChild(TotalHargaBarang);
+                listDiv.append(appointmentDive);
+            })
+            const TrTotalHarga = document.createElement("tr");
+            TrTotalHarga.setAttribute('class','table-success');
+            const TotalTxt = document.createElement("th");
+            TotalTxt.setAttribute('colspan', '4');
+            TotalTxt.innerHTML = 'Total Semua';
+            const TotalSemuaHarga = document.createElement("td");
+            TotalSemuaHarga.innerHTML = "<h3>Rp."+parseInt(hitungToatlHargaBarang).toLocaleString()+"</h3>";
+            
+
+            TrTotalHarga.appendChild(TotalTxt);
+            TrTotalHarga.appendChild(TotalSemuaHarga);
+            listDiv.append(TrTotalHarga);
+        });
+
+        $('#tombol_bayar').attr('disabled','true').addClass('disable_btn');
+        $('#UangBayar').on('keyup', function(){
+            var jumlahuangbayar = $(this).val();
+            var kembalian = jumlahuangbayar - hitungToatlHargaBarang;
+            if(jumlahuangbayar < hitungToatlHargaBarang){
+                $('#UangKembalian').val('Rp.0');
+                $('#tombol_bayar').attr('disabled','true').addClass('disable_btn');
+            }else{
+                $('#UangKembalian').val('Rp.'+parseInt(kembalian).toLocaleString());
+                $('#tombol_bayar').removeAttr('disabled').removeClass('disable_btn');
+            }
+            
+        });
+        $('#tombol_bayar').click(function(){
+            alert("Selamat, anda berhasil Belanja ");
+        });
+    </script>
+  </body>
+</html>
